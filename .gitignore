@@ -1,0 +1,17 @@
+# IDE files
+.idea
+
+# OS files
+.DS_Store
+
+# Manual ignores
+._*
+.env
+
+# Generated files
+*.py~
+*.pyc
+logs/*
+package/*
+resources/tx/out/*
+tmp/*
