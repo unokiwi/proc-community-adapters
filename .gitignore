@@ -14,5 +14,5 @@
 logs/*
 !logs/.gitkeep
 package/*
-resources/tx/out/*
+resources/forudesigns/out/*
 tmp/*
