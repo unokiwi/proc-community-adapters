@@ -227,7 +227,8 @@ def get_chunked_rows(raw, verbose, algo=SORT_ALGO_AUTO):
         # Rotate 60 deg CCW: y' = -sin(60 deg) * x + cos(60 deg) * y
         mapped = [-0.866 * x['before']['x'] + 0.5 * x['before']['y'] for x in raw]
     else:
-        # Perform all rotation algos and pick one with least amount of rows (best fit).
+        # Rotation algos don't work very well with our samples.
+        # So by default we will do no sort and direct sort algos and pick best fit based on suggested_rows_count.
         rows_sets = [
             {
                 'rows': get_chunked_rows(raw, verbose, SORT_ALGO_DIRECT),
