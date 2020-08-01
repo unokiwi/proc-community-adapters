@@ -4,7 +4,6 @@ from dotenv import load_dotenv
 import json
 import math
 import os
-import pprint
 import re
 import statistics
 import sys
@@ -51,9 +50,6 @@ logger = UkLogger(log_file=log_file, name='convert-forudesigns-data')
 
 # Hijack system error handling.
 sys.excepthook = logger.exception_handler
-
-# Initialize pretty printer.
-pp = pprint.PrettyPrinter(indent=2, depth=10)
 
 
 @click.command()
@@ -246,7 +242,7 @@ def get_chunked_rows(raw, verbose, algo=SORT_ALGO_AUTO):
         ]
         for row_set in rows_sets:
             rows_count_ratio = len(row_set['rows']) / suggested_rows_count
-            row_set['sort'] = rows_count_ratio if rows_count_ratio > 1 else 1/rows_count_ratio
+            row_set['sort'] = rows_count_ratio if rows_count_ratio > 1 else 1 / rows_count_ratio
         rows_sets.sort(key=lambda x: x['sort'])
         logger.log(f"Algo selected: {rows_sets[0]['algo']} Length: {len(rows_sets[0]['rows'])}", LOG_LEVEL_INFO)
         return rows_sets[0]['rows']
@@ -278,10 +274,10 @@ def get_chunked_rows(raw, verbose, algo=SORT_ALGO_AUTO):
         if stdev > last_stdev * new_row_stdev_multiplier_threshold:
             # Std dev jumped up too much, meaning we have found the beginning of a new row.
             # We will save the current row.
-            rows.append(raw[processed:end-1])
+            rows.append(raw[processed:end - 1])
 
             # and processed the beginning index of the next row.
-            processed = end-1
+            processed = end - 1
             # reset bracket size
             bracket_size = min_cols
         else:
@@ -305,81 +301,6 @@ def get_chunked_rows(raw, verbose, algo=SORT_ALGO_AUTO):
         logger.log('Mode: ' + str(statistics.multimode(length_stats)), LOG_LEVEL_INFO)
 
     return rows
-
-    # # Failed strategy
-    # # Clean data
-    # raw.sort(key=lambda x: x['before']['y'] * 10000 + x['before']['x'])
-    #
-    # # Take a point, find top 2 neighbors with increase in X, pick closest 1 as next neighbor.
-    # # Assume increase in y > N times increase in x is a bad pick, and we will start a new row instead.
-
-    # cleaned = []
-    # row = []
-    # y_inc_multi_threshold_new_row = 1.5
-    # y_inc_multi_threshold_no_compute = 4
-    # nearest_neighbors = [{
-    #     'index': None,
-    #     'dist': 200000000,
-    #     'new_row': 0
-    # }]
-    # while len(raw):
-    #     print('Elements remaining: ' + str(len(raw)))
-    #
-    #     # If both top candidates are too far away vertically, then assume no good candidates and begin new row.
-    #     # If second candidate is ok, then use that.
-    #     if nearest_neighbors[0]['new_row']:
-    #         if len(nearest_neighbors) > 1 and not nearest_neighbors[1]['new_row']:
-    #             nearest_neighbors[0]['index'] = nearest_neighbors[1]['index']
-    #         else:
-    #             nearest_neighbors[0]['index'] = None
-    #
-    #     if nearest_neighbors[0]['index'] is None:
-    #         cleaned.append(row)
-    #         row = []
-    #         current_point = raw.pop(0)
-    #     else:
-    #         current_point = raw.pop(nearest_neighbors[0]['index'])
-    #         # No more elements remaining.
-    #         if not len(raw):
-    #             cleaned.append(row)
-    #             break
-    #
-    #     row.append(current_point)
-    #     nearest_neighbors = [{
-    #         'index': None,
-    #         'dist': 200000000,
-    #         'new_row': 0
-    #     }]
-    #     for i, point in enumerate(raw):
-    #         if point['before']['x'] < current_point['before']['x']:
-    #             continue
-    #         x_shift = point['before']['x'] - current_point['before']['x']
-    #         y_shift = point['before']['y'] - current_point['before']['y']
-    #         new_row = 0
-    #         if x_shift is 0 or (abs(y_shift) / x_shift > y_inc_multi_threshold_no_compute):
-    #             # Too much y shift. Assume point is too far away and not worth computing.
-    #             continue
-    #         if x_shift is 0 or (abs(y_shift) / x_shift > y_inc_multi_threshold_new_row):
-    #             # Too much y shift. Assume point belongs in a new row.
-    #             new_row = 1
-    #
-    #         dist_sq = x_shift ** 2 + y_shift ** 2
-    #         if dist_sq < nearest_neighbors[0]['dist']:
-    #             nearest_neighbors.insert(0, {
-    #                 'index': i,
-    #                 'dist': dist_sq,
-    #                 'new_row': new_row
-    #             })
-    #         elif dist_sq < nearest_neighbors[1]['dist']:
-    #             nearest_neighbors.insert(1, {
-    #                 'index': i,
-    #                 'dist': dist_sq,
-    #                 'new_row': new_row
-    #             })
-    #
-    #     # print(current_point)
-    #     # print(nearest_neighbor)
-    #     # print(raw[nearest_neighbor])
 
 
 if __name__ == '__main__':
