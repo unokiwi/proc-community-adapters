@@ -27,3 +27,11 @@ To process forudesigns transformation data, simply put For U Designs data into:
 and then run:
 
 `python commands/convert-forudesigns-data.py`
+
+output will be at:
+
+`./resources/forudesigns/out`
+
+Use the editor at
+`https://unokiwi.com/mj/v-standard`
+to import, modify, and export final data.

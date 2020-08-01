@@ -12,6 +12,7 @@
 *.py~
 *.pyc
 logs/*
+!logs/.gitkeep
 package/*
 resources/tx/out/*
 tmp/*
